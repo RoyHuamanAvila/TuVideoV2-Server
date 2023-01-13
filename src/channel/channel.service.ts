@@ -27,6 +27,7 @@ export class ChannelService {
     const updatedChannel = this.channelModel.findByIdAndUpdate(
       id,
       updateChannel,
+      { new: true },
     );
     return updatedChannel;
   }

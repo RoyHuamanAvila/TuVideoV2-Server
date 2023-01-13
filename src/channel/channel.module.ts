@@ -34,6 +34,9 @@ export class ChannelModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(VerifyToken)
-      .forRoutes({ path: '/channel', method: RequestMethod.POST });
+      .forRoutes(
+        { path: '/channel', method: RequestMethod.POST },
+        { path: '/channel', method: RequestMethod.PATCH },
+      );
   }
 }

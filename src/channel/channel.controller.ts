@@ -85,8 +85,13 @@ export class ChannelController {
       const channelID = userInfo.user_metadata.channel;
 
       if (!channelID) return { message: 'This user not contain a channel' };
+      const updatedChannel = await this.channelService.updateChannel(
+        channelID,
+        channelData,
+      );
 
-      return await this.channelService.updateChannel(channelID, channelData);
+      console.log(updatedChannel);
+      return await updatedChannel;
     } catch (error) {
       console.log(error);
     }
