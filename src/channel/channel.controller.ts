@@ -7,12 +7,16 @@ import {
   Inject,
   Body,
   Patch,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { UserService } from 'src/user/user.service';
 import { NotFoundException } from '@nestjs/common/exceptions';
 import axios from 'axios';
 import { CreateChannel, UpdateChannel } from './channel.dto';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('channel')
 export class ChannelController {
@@ -20,6 +24,9 @@ export class ChannelController {
 
   @Inject(UserService)
   userService: UserService;
+
+  @Inject(CloudinaryService)
+  cloudinaryService: CloudinaryService;
 
   @Get('/:id')
   async getChannel(@Param('id') id: string) {
@@ -79,18 +86,60 @@ export class ChannelController {
   }
 
   @Patch('/')
-  async updateChannel(@Req() req, @Body() channelData: UpdateChannel) {
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'logo', maxCount: 1 },
+      { name: 'banner', maxCount: 1 },
+    ]),
+  )
+  async updateChannel(
+    @Req() req,
+    @UploadedFiles()
+    files: {
+      logo?: Express.Multer.File[];
+      banner?: Express.Multer.File[];
+    },
+    @Body() dataToUpdate: UpdateChannel,
+  ) {
     try {
-      const { userInfo } = req.body;
-      const channelID = userInfo.user_metadata.channel;
+      const { userInfo } = req;
+
+      const channelID = userInfo.user_metadata?.channel;
 
       if (!channelID) return { message: 'This user not contain a channel' };
+
+      if (files) {
+        const { logo, banner } = files;
+
+        if (logo) {
+          const logoUploaded = await this.cloudinaryService.uploadImage(
+            logo,
+            channelID,
+          );
+
+          dataToUpdate = {
+            ...dataToUpdate,
+            logo: logoUploaded.secure_url,
+          };
+        }
+
+        if (banner) {
+          const bannerUpload = await this.cloudinaryService.uploadImage(
+            banner,
+            channelID,
+          );
+
+          dataToUpdate = {
+            ...dataToUpdate,
+            banner: bannerUpload.secure_url,
+          };
+        }
+      }
+
       const updatedChannel = await this.channelService.updateChannel(
         channelID,
-        channelData,
+        dataToUpdate,
       );
-
-      console.log(updatedChannel);
       return await updatedChannel;
     } catch (error) {
       console.log(error);
