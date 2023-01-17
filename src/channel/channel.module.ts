@@ -10,6 +10,8 @@ import { Channel, ChannelSchema } from './channel.schema';
 import { ChannelController } from './channel.controller';
 import { VerifyToken } from './middlewares/VerifyToken';
 import { UserModule } from 'src/user/user.module';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { MulterModule } from '@nestjs/platform-express/multer';
 
 @Module({
   imports: [
@@ -25,7 +27,13 @@ import { UserModule } from 'src/user/user.module';
         },
       },
     ]),
+    MulterModule.registerAsync({
+      useFactory: () => ({
+        dest: './upload',
+      }),
+    }),
     UserModule,
+    CloudinaryModule,
   ],
   controllers: [ChannelController],
   providers: [ChannelService],

@@ -4,10 +4,11 @@ import { readFileSync } from 'fs';
 import { verify } from 'jsonwebtoken';
 import { join } from 'path';
 import axios from 'axios';
+import { CustomRequest } from 'src/interfaces/index';
 
 @Injectable()
 export class VerifyToken implements NestMiddleware {
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(req: CustomRequest, res: Response, next: NextFunction) {
     const { authorization } = req.headers;
     try {
       const token = authorization.split('Bearer ')[1];
@@ -24,10 +25,9 @@ export class VerifyToken implements NestMiddleware {
         },
       });
 
-      req.body.auth0ID = auth0ID;
-      req.body.token = token;
-      req.body.userInfo = userInfoAuth0.data;
-
+      req.auth0ID = auth0ID;
+      req.token = token;
+      req.userInfo = userInfoAuth0.data;
       next();
     } catch (error) {
       console.log(error);
