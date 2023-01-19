@@ -1,5 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { readFileSync } from 'fs';
 import { verify } from 'jsonwebtoken';
 import { join } from 'path';
