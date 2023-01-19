@@ -42,7 +42,7 @@ export class ChannelController {
 
   @Post('/')
   async createChannel(@Req() req, @Body() channelData: CreateChannel) {
-    const { auth0ID, token, userInfo } = req.body;
+    const { auth0ID, token, userInfo } = req;
     const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN;
 
     try {
@@ -112,10 +112,7 @@ export class ChannelController {
         const { logo, banner } = files;
 
         if (logo) {
-          const logoUploaded = await this.cloudinaryService.uploadImage(
-            logo,
-            channelID,
-          );
+          const logoUploaded = await this.cloudinaryService.uploadImages(logo);
 
           dataToUpdate = {
             ...dataToUpdate,
@@ -124,9 +121,8 @@ export class ChannelController {
         }
 
         if (banner) {
-          const bannerUpload = await this.cloudinaryService.uploadImage(
+          const bannerUpload = await this.cloudinaryService.uploadImages(
             banner,
-            channelID,
           );
 
           dataToUpdate = {

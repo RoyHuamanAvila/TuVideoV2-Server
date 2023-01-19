@@ -6,10 +6,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ChannelModule } from './channel/channel.module';
 import { ConfigModule } from '@nestjs/config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
     UserModule,
+    VideoModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
     }),
