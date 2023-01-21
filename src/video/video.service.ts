@@ -12,6 +12,7 @@ export class VideoService {
 
   async createVideo(data: CreateVideo) {
     const createdVideo = new this.videoModel(data);
+    createdVideo.populate('owner');
     return createdVideo.save();
   }
 

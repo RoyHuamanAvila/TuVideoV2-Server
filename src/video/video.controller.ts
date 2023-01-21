@@ -15,6 +15,8 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import mongoose from 'mongoose';
 import { UploadedFiles } from '@nestjs/common/decorators';
+import { UserService } from 'src/user/user.service';
+import { ChannelService } from 'src/channel/channel.service';
 
 @Controller('video')
 export class VideoController {
@@ -22,6 +24,9 @@ export class VideoController {
 
   @Inject(CloudinaryService)
   cloudinaryService: CloudinaryService;
+
+  @Inject(ChannelService)
+  channelService: ChannelService;
 
   @Post('/')
   @UseInterceptors(
@@ -60,6 +65,11 @@ export class VideoController {
           thumbnail: thumbnailUploaded.secure_url,
           url: videoUploaded.secure_url,
         });
+
+        const owner = await this.channelService.addVideo(
+          channel,
+          createdVideo._id,
+        );
 
         return createdVideo;
       }

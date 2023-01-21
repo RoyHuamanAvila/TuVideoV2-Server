@@ -37,6 +37,7 @@ import { MulterModule } from '@nestjs/platform-express/multer';
   ],
   controllers: [ChannelController],
   providers: [ChannelService],
+  exports: [ChannelService],
 })
 export class ChannelModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
