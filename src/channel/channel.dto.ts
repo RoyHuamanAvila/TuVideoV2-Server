@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
+import { Video } from 'src/video/video.schema';
 
 export interface CreateChannel {
   owner?: mongoose.Types.ObjectId;
@@ -10,4 +11,5 @@ export interface UpdateChannel {
   name?: string;
   logo?: string;
   banner?: string;
+  videos?: mongoose.Types.ObjectId[];
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Channel, ChannelDocument } from './channel.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateChannel, UpdateChannel } from './channel.dto';
 
 @Injectable()
@@ -30,5 +30,20 @@ export class ChannelService {
       { new: true },
     );
     return updatedChannel;
+  }
+
+  async addVideo(channelId: string, newId: Types.ObjectId) {
+    try {
+      const updatedChannel = this.channelModel.findOneAndUpdate(
+        { _id: channelId },
+        {
+          $push: {
+            videos: newId,
+          },
+        },
+        { new: true },
+      );
+      return updatedChannel;
+    } catch (error) {}
   }
 }

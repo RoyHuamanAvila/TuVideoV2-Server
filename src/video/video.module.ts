@@ -11,6 +11,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { VerifyToken } from 'src/channel/middlewares/VerifyToken';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Video, VideoSchema } from './video.schema';
+import { ChannelModule } from 'src/channel/channel.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { Video, VideoSchema } from './video.schema';
       }),
     }),
     CloudinaryModule,
+    ChannelModule,
   ],
   controllers: [VideoController],
   providers: [VideoService],
