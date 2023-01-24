@@ -36,4 +36,8 @@ export class VideoService {
 
     return foundedVideos;
   }
+
+  async getVideoByID(id: string) {
+    return await this.videoModel.findById(id).populate('owner');
+  }
 }

@@ -83,7 +83,7 @@ export class VideoController {
     return this.videoService.getVideos();
   }
 
-  @Get('/:id')
+  @Get('/:id/videos')
   async getVideosByOwnerController(@Param('id') id: string) {
     return this.videoService.getVideosByOwner(id);
   }
@@ -91,5 +91,10 @@ export class VideoController {
   @Get('/resume')
   async getVideosResumeController() {
     return this.videoService.getVideosResume();
+  }
+
+  @Get('/:id')
+  async getVideosByID(@Param('id') id: string) {
+    return this.videoService.getVideoByID(id);
   }
 }
