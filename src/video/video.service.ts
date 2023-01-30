@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Video, VideoDocument } from './video.schema';
 import { Model } from 'mongoose';
 import { CreateVideo } from './video.dto';
+import { CreateComment } from 'src/comment/comment.dto';
 
 @Injectable()
 export class VideoService {
@@ -17,7 +18,9 @@ export class VideoService {
   }
 
   async getVideos() {
-    const foundedVideos = await this.videoModel.find({}).populate('owner');
+    const foundedVideos = await this.videoModel
+      .find({})
+      .populate(['owner', { path: 'comments', populate: { path: 'owner' } }]);
     return foundedVideos;
   }
 
@@ -39,5 +42,20 @@ export class VideoService {
 
   async getVideoByID(id: string) {
     return await this.videoModel.findById(id).populate('owner');
+  }
+
+  async getCommentsInVideo(id: string) {
+    return this.videoModel
+      .findById(id, 'comments')
+      .populate({ path: 'comments', populate: { path: 'owner' } })
+      .exec();
+  }
+
+  async addCommentByID(videoID: string, comment: CreateComment) {
+    return this.videoModel.findByIdAndUpdate(videoID, {
+      $push: {
+        comments: comment,
+      },
+    });
   }
 }

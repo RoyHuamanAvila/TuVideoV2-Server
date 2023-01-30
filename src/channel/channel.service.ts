@@ -10,9 +10,17 @@ export class ChannelService {
     @InjectModel(Channel.name) private channelModel: Model<ChannelDocument>,
   ) {}
 
-  async getChannel(id: string): Promise<Channel> {
+  async getChannel(id: string) {
     return this.channelModel.findById(id);
   }
+
+  /*   async getChannelResume(id: string) {
+    const channel = await this.channelModel
+      .findById(id)
+      .select('ChannelResume')
+      .exec();
+    return channel;
+  } */
 
   async getChannels(): Promise<Channel[]> {
     return this.channelModel.find({}).populate('owner');

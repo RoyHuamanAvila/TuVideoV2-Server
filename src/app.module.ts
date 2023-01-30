@@ -7,6 +7,7 @@ import { ChannelModule } from './channel/channel.module';
 import { ConfigModule } from '@nestjs/config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { VideoModule } from './video/video.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { VideoModule } from './video/video.module';
     MongooseModule.forRoot(process.env.MONGODB_URI),
     ChannelModule,
     CloudinaryModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

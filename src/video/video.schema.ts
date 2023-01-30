@@ -23,6 +23,9 @@ export class Video {
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Channel', required: true })
   owner: Channel;
+
+  @Prop({ type: [SchemaTypes.ObjectId], ref: 'Comment' })
+  comments: Comment[];
 }
 
 export const VideoSchema = SchemaFactory.createForClass(Video);
