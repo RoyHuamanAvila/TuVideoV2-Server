@@ -17,6 +17,7 @@ import axios from 'axios';
 import { CreateChannel, UpdateChannel } from './channel.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { ChannelDocument } from './channel.schema';
 
 @Controller('channel')
 export class ChannelController {
@@ -28,9 +29,9 @@ export class ChannelController {
   @Inject(CloudinaryService)
   cloudinaryService: CloudinaryService;
 
-  @Get('/:id')
+  @Get(':id')
   async getChannel(@Param('id') id: string) {
-    return await this.channelService.getChannel(id);
+    return this.channelService.getChannel(id);
   }
 
   @Get('/')

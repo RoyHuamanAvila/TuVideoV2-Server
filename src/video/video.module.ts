@@ -8,7 +8,7 @@ import { VideoService } from './video.service';
 import { VideoController } from './video.controller';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { VerifyToken } from 'src/channel/middlewares/VerifyToken';
+import { VerifyToken } from 'src/middlewares/VerifyToken';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Video, VideoSchema } from './video.schema';
 import { ChannelModule } from 'src/channel/channel.module';
@@ -26,6 +26,7 @@ import { ChannelModule } from 'src/channel/channel.module';
   ],
   controllers: [VideoController],
   providers: [VideoService],
+  exports: [VideoService],
 })
 export class VideoModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -5,7 +5,11 @@ import { Video } from 'src/video/video.schema';
 
 export type ChannelDocument = HydratedDocument<Channel>;
 
-@Schema()
+@Schema({
+  autoIndex: true,
+  toJSON: { virtuals: true, getters: true },
+  toObject: { virtuals: true, getters: true },
+})
 export class Channel {
   @Prop({ required: true })
   name: string;
@@ -26,4 +30,13 @@ export class Channel {
   videos: Video[];
 }
 
-export const ChannelSchema = SchemaFactory.createForClass(Channel);
+const ChannelSchema = SchemaFactory.createForClass(Channel);
+
+ChannelSchema.virtual('ChannelResume').get(function () {
+  return {
+    logo: this.logo,
+    name: this.name,
+  };
+});
+
+export { ChannelSchema };

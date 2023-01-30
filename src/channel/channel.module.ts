@@ -8,7 +8,7 @@ import { ChannelService } from './channel.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Channel, ChannelSchema } from './channel.schema';
 import { ChannelController } from './channel.controller';
-import { VerifyToken } from './middlewares/VerifyToken';
+import { VerifyToken } from '../middlewares/VerifyToken';
 import { UserModule } from 'src/user/user.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { MulterModule } from '@nestjs/platform-express/multer';

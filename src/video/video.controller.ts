@@ -97,4 +97,9 @@ export class VideoController {
   async getVideosByID(@Param('id') id: string) {
     return this.videoService.getVideoByID(id);
   }
+
+  @Get('/:id/comments')
+  async getVideoCommentsController(@Param('id') id: string) {
+    return this.videoService.getCommentsInVideo(id);
+  }
 }
