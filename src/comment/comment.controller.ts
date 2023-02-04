@@ -6,6 +6,8 @@ import {
   Res,
   Post,
   Inject,
+  Patch,
+  Delete,
 } from '@nestjs/common';
 import { CreateComment } from './comment.dto';
 import { CustomRequest } from 'src/interfaces';
@@ -73,5 +75,18 @@ export class CommentController {
         .status(HttpStatusCode.BadGateway)
         .json({ error: 'Failed to create comment' });
     }
+  }
+
+  @Patch(':id')
+  async editCommentController(
+    @Param('id') id: string,
+    @Body() comment: CreateComment,
+  ) {
+    return this.commentService.updateComment(id, comment.content);
+  }
+
+  @Delete(':id')
+  async deleteCommentController(@Param('id') id: string) {
+    return this.commentService.deleteComment(id);
   }
 }
