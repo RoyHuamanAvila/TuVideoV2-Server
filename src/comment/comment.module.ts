@@ -28,6 +28,10 @@ export class CommentModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(VerifyToken, VerifyChannel)
-      .forRoutes({ path: '/comment/:id', method: RequestMethod.POST });
+      .forRoutes(
+        { path: '/comment/:id', method: RequestMethod.POST },
+        { path: '/comment/:id', method: RequestMethod.PATCH },
+        { path: '/comment/:id', method: RequestMethod.DELETE },
+      );
   }
 }
