@@ -1,16 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 import { User } from 'src/user/user.schema';
 import { Video } from 'src/video/video.schema';
 
 export type ChannelDocument = HydratedDocument<Channel>;
 
+type ChannelResume = {
+  logo: string;
+  name: string;
+};
 @Schema({
   autoIndex: true,
   toJSON: { virtuals: true, getters: true },
   toObject: { virtuals: true, getters: true },
 })
 export class Channel {
+  @Prop({ type: SchemaTypes.ObjectId })
+  _id: Types.ObjectId;
+
   @Prop({ required: true })
   name: string;
 
@@ -23,8 +30,14 @@ export class Channel {
   @Prop({ default: '' })
   banner: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  subscribers: User[];
+  @Prop({ type: [SchemaTypes.ObjectId], ref: 'Channel' })
+  subscribers: Channel[];
+
+  @Prop({
+    type: [SchemaTypes.ObjectId],
+    ref: 'Channel',
+  })
+  subscribes?: Channel[];
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Video' })
   videos: Video[];
@@ -34,8 +47,10 @@ const ChannelSchema = SchemaFactory.createForClass(Channel);
 
 ChannelSchema.virtual('ChannelResume').get(function () {
   return {
+    _id: this._id,
     logo: this.logo,
     name: this.name,
+    subscribers: this.subscribers,
   };
 });
 

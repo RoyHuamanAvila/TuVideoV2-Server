@@ -46,6 +46,8 @@ export class ChannelModule implements NestModule {
       .forRoutes(
         { path: '/channel', method: RequestMethod.POST },
         { path: '/channel', method: RequestMethod.PATCH },
+        { path: '/channel/subscribe/:id', method: RequestMethod.POST },
+        { path: '/channel/unsubscribe/:id', method: RequestMethod.DELETE },
       );
   }
 }
