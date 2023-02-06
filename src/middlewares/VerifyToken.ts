@@ -17,7 +17,8 @@ export class VerifyToken implements NestMiddleware {
           .json({ error: 'Needs token' });
 
       const token = authorization.split('Bearer ')[1];
-      const publicKey = readFileSync(join(__dirname, './public.pem'));
+      const publicKey = process.env.PEM;
+      console.log(publicKey);
 
       const decoded = verify(token, publicKey);
       if (!decoded)
