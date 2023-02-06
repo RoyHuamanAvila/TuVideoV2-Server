@@ -11,7 +11,7 @@ export class ChannelService {
   ) {}
 
   async getChannel(id: string) {
-    return this.channelModel.findById(id);
+    return this.channelModel.findById(id).populate(['owner']);
   }
 
   /*   async getChannelResume(id: string) {
@@ -52,6 +52,65 @@ export class ChannelService {
         { new: true },
       );
       return updatedChannel;
+    } catch (error) {}
+  }
+
+  async subscribe(idToSubscribe: string, channelID: string) {
+    try {
+      const channelFound = await this.channelModel.findById(idToSubscribe);
+
+      const foundRepeat = channelFound.subscribes.find(
+        (channel) => channel._id.toString() === idToSubscribe,
+      );
+
+      if (foundRepeat) throw new Error('Susbscription repeat');
+
+      await this.channelModel.findByIdAndUpdate(idToSubscribe, {
+        $push: {
+          subscribers: channelID,
+        },
+      });
+
+      const channelUpdated = await this.channelModel
+        .findByIdAndUpdate(
+          channelID,
+          {
+            $push: {
+              subscribes: idToSubscribe,
+            },
+          },
+          { new: true },
+        )
+        .populate('subscribes');
+
+      const subscription = channelUpdated.subscribes.find(
+        (channel) => channel._id.toString() === idToSubscribe,
+      );
+      return subscription?.['ChannelResume'];
+    } catch (error) {}
+  }
+
+  async unSuscribe(idToUnsuscribe: string, channelID: string) {
+    try {
+      const channelUpdated = await this.channelModel
+        .findByIdAndUpdate(channelID, {
+          $pull: {
+            subscribes: idToUnsuscribe,
+          },
+        })
+        .populate('subscribes');
+
+      await this.channelModel.findByIdAndUpdate(idToUnsuscribe, {
+        $pull: {
+          subscribers: channelID,
+        },
+      });
+
+      const subscription = channelUpdated.subscribes.find(
+        (channel) => channel._id.toString() === idToUnsuscribe,
+      );
+
+      return subscription?.['ChannelResume'];
     } catch (error) {}
   }
 }

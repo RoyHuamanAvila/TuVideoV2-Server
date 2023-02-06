@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Param,
+  Delete,
   Req,
   Inject,
   Body,
@@ -18,6 +19,7 @@ import { CreateChannel, UpdateChannel } from './channel.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ChannelDocument } from './channel.schema';
+import { UserData } from 'src/interfaces';
 
 @Controller('channel')
 export class ChannelController {
@@ -31,13 +33,12 @@ export class ChannelController {
 
   @Get(':id')
   async getChannel(@Param('id') id: string) {
-    return this.channelService.getChannel(id);
+    const foundChannel = await this.channelService.getChannel(id);
+    return foundChannel.populate(['subscribes', 'owner']);
   }
 
   @Get('/')
   async getChannels() {
-    const DOMAIN = process.env.AUTH0_DOMAIN;
-    console.log(DOMAIN);
     return await this.channelService.getChannels();
   }
 
@@ -138,6 +139,39 @@ export class ChannelController {
         dataToUpdate,
       );
       return await updatedChannel;
+    } catch (error) {
+      console.log(error, 'Error to update');
+    }
+  }
+
+  @Post('/subscribe/:id')
+  async subscribeController(@Param('id') id: string, @Req() req) {
+    try {
+      const userInfo: UserData = req.userInfo;
+
+      const subscription = await this.channelService.subscribe(
+        id,
+        userInfo.user_metadata.channel,
+      );
+
+      return subscription;
+    } catch (error) {
+      console.log(error);
+      throw new Error('Error to suscribe');
+    }
+  }
+
+  @Delete('/unsubscribe/:id')
+  async unSuscribeController(@Param('id') id: string, @Req() req) {
+    try {
+      const userInfo: UserData = req.userInfo;
+
+      const subscription = await this.channelService.unSuscribe(
+        id,
+        userInfo.user_metadata.channel,
+      );
+
+      return subscription;
     } catch (error) {
       console.log(error);
     }
