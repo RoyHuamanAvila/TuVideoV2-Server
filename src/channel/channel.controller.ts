@@ -12,14 +12,16 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { UserService } from 'src/user/user.service';
-import { NotFoundException } from '@nestjs/common/exceptions';
+import { UserService } from '../user/user.service';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 import axios from 'axios';
 import { CreateChannel, UpdateChannel } from './channel.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { ChannelDocument } from './channel.schema';
-import { UserData } from 'src/interfaces';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { UserData } from '../interfaces';
 
 @Controller('channel')
 export class ChannelController {
@@ -77,13 +79,19 @@ export class ChannelController {
       });
 
       return {
-        message: 'Channel created succesful',
+        message: 'Channel created successful',
         owner: foundUser._id,
         channel: createdChannel,
         user_metadata: response.data,
       };
     } catch (error) {
-      console.log(error);
+      console.log(
+        'Error updating user metadata in Auth0:',
+        error.response?.data || error.message,
+      );
+      throw new InternalServerErrorException(
+        'Error updating user metadata in Auth0',
+      );
     }
   }
 

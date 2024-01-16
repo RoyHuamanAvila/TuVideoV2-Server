@@ -1,8 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Response } from 'express';
-import { readFileSync } from 'fs';
 import { verify } from 'jsonwebtoken';
-import { join } from 'path';
 import axios, { HttpStatusCode } from 'axios';
 import { CustomRequest } from 'src/interfaces/index';
 
@@ -17,8 +15,14 @@ export class VerifyToken implements NestMiddleware {
           .json({ error: 'Needs token' });
 
       const token = authorization.split('Bearer ')[1];
+      if (!token) {
+        return res
+          .status(HttpStatusCode.Forbidden)
+          .json({ error: 'Invalid token' });
+      }
+
       const publicKey = process.env.PEM;
-      console.log(publicKey);
+      const auth0Domain = process.env.AUTH0_DOMAIN;
 
       const decoded = verify(token, publicKey);
       if (!decoded)
@@ -29,7 +33,7 @@ export class VerifyToken implements NestMiddleware {
       const auth0ID = decoded.sub as string;
 
       const userInfoAuth0 = await axios.request({
-        url: `https://dev-t33ryzl7kfi0qfgq.us.auth0.com/api/v2/users/${auth0ID}`,
+        url: `${auth0Domain}/api/v2/users/${auth0ID}`,
         method: 'GET',
         headers: {
           authorization: `Bearer ${token}`,
@@ -42,7 +46,10 @@ export class VerifyToken implements NestMiddleware {
       req.userInfo = userInfoAuth0.data;
       next();
     } catch (error) {
-      return res.status(HttpStatusCode.Forbidden).json({ error });
+      console.error('Error in VerifyToken middleware: ', error);
+      return res
+        .status(HttpStatusCode.Forbidden)
+        .json({ error: 'An error ocurred' });
     }
   }
 }

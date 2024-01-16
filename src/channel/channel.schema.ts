@@ -1,14 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
-import { User } from 'src/user/user.schema';
-import { Video } from 'src/video/video.schema';
+import { User } from '../user/user.schema';
+import { Video } from '../video/video.schema';
 
 export type ChannelDocument = HydratedDocument<Channel>;
 
-type ChannelResume = {
-  logo: string;
-  name: string;
-};
 @Schema({
   autoIndex: true,
   toJSON: { virtuals: true, getters: true },

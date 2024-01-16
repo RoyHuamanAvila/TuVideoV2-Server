@@ -1,5 +1,4 @@
-import mongoose, { Types } from 'mongoose';
-import { Video } from 'src/video/video.schema';
+import mongoose from 'mongoose';
 
 export interface CreateChannel {
   owner?: mongoose.Types.ObjectId;
