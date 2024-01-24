@@ -10,18 +10,20 @@ import {
   Patch,
   UseInterceptors,
   UploadedFiles,
+  HttpStatus,
+  UploadedFile,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { UserService } from '../user/user.service';
-import {
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common/exceptions';
+import { HttpException, NotFoundException } from '@nestjs/common/exceptions';
 import axios from 'axios';
 import { CreateChannel, UpdateChannel } from './channel.dto';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { UserData } from '../interfaces';
+import { CustomRequest, UserData } from '../interfaces';
 
 @Controller('channel')
 export class ChannelController {
@@ -45,8 +47,16 @@ export class ChannelController {
   }
 
   @Post('/')
-  async createChannel(@Req() req, @Body() channelData: CreateChannel) {
+  @UseInterceptors(FileInterceptor('logo'))
+  async createChannel(
+    @UploadedFile() logo,
+    @Req() req,
+    @Body() channelData: CreateChannel,
+  ) {
+    console.log('Creating channel');
+    console.log('channelData: ', channelData);
     const { auth0ID, token, userInfo } = req;
+    console.log('Logo', logo);
     const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN;
 
     try {
@@ -54,10 +64,16 @@ export class ChannelController {
       if (!foundUser) throw new NotFoundException();
 
       if (userInfo?.user_metadata?.channel)
-        return { message: 'this user contain a channel' };
+        throw new HttpException(
+          'This user already has a channel',
+          HttpStatus.CONFLICT,
+        );
 
-      if (!channelData.logo || !channelData.name)
-        return { message: 'Paths necessaries' };
+      if (!logo || !channelData.name)
+        throw new HttpException(
+          'You need to provide a name and logo',
+          HttpStatus.BAD_REQUEST,
+        );
 
       const createdChannel = await this.channelService.createChannel({
         ...channelData,
@@ -85,13 +101,8 @@ export class ChannelController {
         user_metadata: response.data,
       };
     } catch (error) {
-      console.log(
-        'Error updating user metadata in Auth0:',
-        error.response?.data || error.message,
-      );
-      throw new InternalServerErrorException(
-        'Error updating user metadata in Auth0',
-      );
+      console.log(error);
+      throw error;
     }
   }
 
@@ -182,6 +193,35 @@ export class ChannelController {
       return subscription;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  @Delete('/')
+  async deleteChannel(@Param('id') id: string, @Req() req: CustomRequest) {
+    try {
+      const channel = req.channel;
+
+      if (!channel)
+        throw new HttpException(
+          'This user not contain a channel',
+          HttpStatus.NOT_FOUND,
+        );
+
+      const deletedChannel = await this.channelService.deleteChannel(channel);
+
+      if (!deletedChannel)
+        throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);
+
+      return deletedChannel;
+    } catch (error) {
+      console.log(error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'There was a problem deleting the channel',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

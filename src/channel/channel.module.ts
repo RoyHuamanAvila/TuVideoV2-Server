@@ -12,21 +12,11 @@ import { VerifyToken } from '../middlewares/VerifyToken';
 import { UserModule } from 'src/user/user.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { MulterModule } from '@nestjs/platform-express/multer';
+import { VerifyChannel } from 'src/middlewares/VerifyChannel';
 
 @Module({
   imports: [
-    MongooseModule.forFeatureAsync([
-      {
-        name: Channel.name,
-        useFactory: () => {
-          const Schema = ChannelSchema;
-          Schema.pre('save', function () {
-            console.log('Hello from pre save');
-          });
-          return Schema;
-        },
-      },
-    ]),
+    MongooseModule.forFeature([{ name: Channel.name, schema: ChannelSchema }]),
     MulterModule.registerAsync({
       useFactory: () => ({
         dest: './upload',
@@ -41,11 +31,15 @@ import { MulterModule } from '@nestjs/platform-express/multer';
 })
 export class ChannelModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(VerifyToken).forRoutes({
+      path: '/channel',
+      method: RequestMethod.POST,
+    });
     consumer
-      .apply(VerifyToken)
+      .apply(VerifyToken, VerifyChannel)
       .forRoutes(
-        { path: '/channel', method: RequestMethod.POST },
         { path: '/channel', method: RequestMethod.PATCH },
+        { path: '/channel', method: RequestMethod.DELETE },
         { path: '/channel/subscribe/:id', method: RequestMethod.POST },
         { path: '/channel/unsubscribe/:id', method: RequestMethod.DELETE },
       );

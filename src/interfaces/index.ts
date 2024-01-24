@@ -4,6 +4,7 @@ export interface CustomRequest extends Request {
   token: string;
   auth0ID: string;
   userInfo: UserData;
+  channel?: string;
 }
 
 export interface UserData {

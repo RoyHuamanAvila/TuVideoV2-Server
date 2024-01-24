@@ -40,6 +40,16 @@ export class ChannelService {
     return updatedChannel;
   }
 
+  async deleteChannel(id: string) {
+    try {
+      const deletedChannel = this.channelModel.findByIdAndDelete(id);
+      return deletedChannel;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   async addVideo(channelId: string, newId: Types.ObjectId) {
     try {
       const updatedChannel = this.channelModel.findOneAndUpdate(
@@ -56,14 +66,14 @@ export class ChannelService {
   }
 
   async subscribe(idToSubscribe: string, channelID: string) {
-    try {
+    /* try {
       const channelFound = await this.channelModel.findById(idToSubscribe);
 
       const foundRepeat = channelFound.subscribes.find(
         (channel) => channel._id.toString() === idToSubscribe,
       );
 
-      if (foundRepeat) throw new Error('Susbscription repeat');
+      if (foundRepeat) throw new Error('Subscription repeat');
 
       await this.channelModel.findByIdAndUpdate(idToSubscribe, {
         $push: {
@@ -87,30 +97,30 @@ export class ChannelService {
         (channel) => channel._id.toString() === idToSubscribe,
       );
       return subscription?.['ChannelResume'];
-    } catch (error) {}
+    } catch (error) {} */
   }
 
-  async unSuscribe(idToUnsuscribe: string, channelID: string) {
-    try {
+  async unSuscribe(idToUnsubscribe: string, channelID: string) {
+    /*  try {
       const channelUpdated = await this.channelModel
         .findByIdAndUpdate(channelID, {
           $pull: {
-            subscribes: idToUnsuscribe,
+            subscribes: idToUnsubscribe,
           },
         })
         .populate('subscribes');
 
-      await this.channelModel.findByIdAndUpdate(idToUnsuscribe, {
+      await this.channelModel.findByIdAndUpdate(idToUnsubscribe, {
         $pull: {
           subscribers: channelID,
         },
       });
 
       const subscription = channelUpdated.subscribes.find(
-        (channel) => channel._id.toString() === idToUnsuscribe,
+        (channel) => channel._id.toString() === idToUnsubscribe,
       );
 
       return subscription?.['ChannelResume'];
-    } catch (error) {}
+    } catch (error) {} */
   }
 }
