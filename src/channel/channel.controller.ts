@@ -75,6 +75,14 @@ export class ChannelController {
           HttpStatus.BAD_REQUEST,
         );
 
+      const logoUploaded = await this.cloudinaryService.uploadImage([logo]);
+      const { secure_url } = logoUploaded;
+
+      channelData = {
+        ...channelData,
+        logo: secure_url,
+      };
+
       const createdChannel = await this.channelService.createChannel({
         ...channelData,
         owner: foundUser._id,
@@ -133,7 +141,7 @@ export class ChannelController {
         const { logo, banner } = files;
 
         if (logo) {
-          const logoUploaded = await this.cloudinaryService.uploadImages(logo);
+          const logoUploaded = await this.cloudinaryService.uploadImage(logo);
 
           dataToUpdate = {
             ...dataToUpdate,
@@ -142,9 +150,7 @@ export class ChannelController {
         }
 
         if (banner) {
-          const bannerUpload = await this.cloudinaryService.uploadImages(
-            banner,
-          );
+          const bannerUpload = await this.cloudinaryService.uploadImage(banner);
 
           dataToUpdate = {
             ...dataToUpdate,

@@ -55,7 +55,7 @@ export class VideoController {
         const { video, thumbnail } = files;
         const videoUploaded = await this.cloudinaryService.uploadVideo(video);
 
-        const thumbnailUploaded = await this.cloudinaryService.uploadImages(
+        const thumbnailUploaded = await this.cloudinaryService.uploadImage(
           thumbnail,
         );
 
