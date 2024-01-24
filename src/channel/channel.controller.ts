@@ -208,15 +208,15 @@ export class ChannelController {
   @Delete('/')
   async deleteChannel(@Param('id') id: string, @Req() req: CustomRequest) {
     try {
-      const channel = req.channel;
+      const { channelId } = req;
 
-      if (!channel)
+      if (!channelId)
         throw new HttpException(
           'This user not contain a channel',
           HttpStatus.NOT_FOUND,
         );
 
-      const deletedChannel = await this.channelService.deleteChannel(channel);
+      const deletedChannel = await this.channelService.deleteChannel(channelId);
 
       if (!deletedChannel)
         throw new HttpException('Channel not found', HttpStatus.NOT_FOUND);

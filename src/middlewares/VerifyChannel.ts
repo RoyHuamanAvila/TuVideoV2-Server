@@ -47,7 +47,7 @@ export class VerifyChannel implements NestMiddleware {
           .json({ error: 'Channel not found' });
       }
 
-      req.channel = channel;
+      req.channelId = channel;
       next();
     } catch (error) {
       console.error('Error in VerifyChannel middleware: ', error);
