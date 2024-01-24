@@ -77,6 +77,7 @@ export class ChannelController {
 
       const logoUploaded = await this.cloudinaryService.uploadImage([logo]);
       const { secure_url } = logoUploaded;
+      console.log('Logo uploaded: ', secure_url);
 
       channelData = {
         ...channelData,
@@ -87,6 +88,7 @@ export class ChannelController {
         ...channelData,
         owner: foundUser._id,
       });
+      console.log('Channel created: ', createdChannel);
 
       const response = await axios.request({
         url: `${AUTH0_DOMAIN}/api/v2/users/${auth0ID}`,
@@ -101,6 +103,7 @@ export class ChannelController {
           },
         },
       });
+      console.log('Response from auth0: ', response.data);
 
       return {
         message: 'Channel created successful',
